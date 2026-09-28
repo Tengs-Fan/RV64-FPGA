@@ -15,7 +15,7 @@ Revisit if parameterizing caches or the MMU becomes painful in plain SystemVeril
 Order: RV64I → Zicsr + M-mode traps → M (mul/div) → S/U modes + Sv39 MMU → A (atomics).
 No C (compressed), F, or D (floating point): they cost area and complexity without teaching much new.
 Linux, if we get there, can run without an FPU (kernel built without FPU support, user space built for rv64ima).
-Revisit C if we want an off-the-shelf Rust target (Rust's bare-metal RV64 targets assume C).
+Zig can target any extension combination, so software doesn't force C (D7).
 
 ## D3. Microarchitecture: classic 5-stage in-order pipeline
 
@@ -48,11 +48,16 @@ Spike, the reference RISC-V simulator (built from source, since Fedora doesn't p
 The first line where they differ points at the bug.
 Formal checking with riscv-formal is optional, later.
 
-## D7. Software: C and assembly, freestanding
+## D7. Software: Zig 0.16.0 and assembly, freestanding
 
-Compiler: Fedora's `gcc-riscv64-linux-gnu` (or clang), always with `-ffreestanding -nostdlib`, with explicit `-march`/`-mabi` matching what the core implements (for example `-march=rv64i_zicsr -mabi=lp64`).
-Pitfall: the distro's `libgcc` is built for rv64gc, so don't link it; provide our own multiply/divide helpers until the M extension exists.
-Rust is optional later (see D2).
+The OS and test programs are written in Zig; the boot entry, trap entry, and ISA tests stay in assembly.
+Pin Zig 0.16.0 (`dnf install zig` on Fedora 44) and don't upgrade mid-project: Zig is pre-1.0 and breaks APIs between releases.
+Build for exactly the extensions the core implements, for example `-target riscv64-freestanding-none -mcpu=generic_rv64-c-m-a-f-d -mcmodel=medium` for plain RV64I; add `+m`, `+a` as the core gains them.
+Zig ships its own runtime helpers (`compiler_rt`) built for that exact target, so before the M extension exists, multiplication calls a software `__muldi3` automatically.
+Verified 2026-09-28: a freestanding test kernel built this way contained no M or C instructions and called `__muldi3`/`__udivdi3`.
+Pitfall (Zig and C alike): code linked at `0x8000_0000` needs the medany code model (`-mcmodel=medium` in Zig, `-mcmodel=medany` in C); the default fails with "relocation R_RISCV_HI20 out of range".
+Reference material such as xv6-riscv is in C; read it, write ours in Zig.
+Fallback: C with Fedora's `gcc-riscv64-linux-gnu` and `-ffreestanding -nostdlib`, without linking the distro's `libgcc` (built for rv64gc).
 
 ## D8. FPGA flow: Vivado in batch mode, openFPGALoader to program
 
@@ -78,3 +83,4 @@ TX of the cable goes to the FPGA's RX pin and vice versa.
 ## Changes
 
 - 2026-09-28: initial decisions.
+- 2026-09-28: D7 switched from C to Zig at the user's request, after a test build confirmed plain-RV64I output.

@@ -25,16 +25,16 @@ Done when: characters from the FPGA appear in `picocom`.
 - [ ] 5-stage pipeline with forwarding and hazard stalls (D3).
 - [ ] Verilator testbench loads an ELF into memory and stops on a pass/fail signal.
 - [ ] All `rv64ui-p-*` tests from `riscv-tests` pass.
-- [ ] Spike log comparison runs and matches on a small C program.
+- [ ] Spike log comparison runs and matches on a small Zig program.
 
 Done when: `make test` runs every `rv64ui` test green.
 
 ### M2. First software on hardware
 
 - [ ] Core plus block RAM plus UART on the FPGA.
-- [ ] A C program prints "hello" over UART.
+- [ ] A Zig program prints "hello" over UART.
 
-Done when: the C program's output appears in `picocom`.
+Done when: the program's output appears in `picocom`.
 
 ### M3. Machine mode
 
