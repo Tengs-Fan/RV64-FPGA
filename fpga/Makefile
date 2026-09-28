@@ -19,7 +19,7 @@ CHIPDB := build/chipdb/$(PART).bin
 OFL    ?= $(shell command -v openFPGALoader || echo /home/linuxbrew/.linuxbrew/bin/openFPGALoader)
 
 # Run a command in the container with the repository mounted at /work, as the calling user.
-RUN := podman run --rm --security-opt label=disable --userns=keep-id \
+RUN := podman run --rm --security-opt label=disable --userns=keep-id -e HOME=/tmp \
 	-v $(ROOT):/work -w /work/fpga $(IMAGE)
 
 .PHONY: all prog clean
