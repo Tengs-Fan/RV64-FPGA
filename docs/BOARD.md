@@ -103,7 +103,7 @@ Project X-Ray maps the `xc7a35t` part onto the `xc7a50t` fabric, so nextpnr-xili
 On 2026-09-24 a test design (`~/Projects/a7-50t-probe` on the Y9000P) filled all 75 RAMB36 sites, loaded with DONE = 1, and passed a write-and-read-back self-test in both bit polarities on 75 of 75 blocks.
 
 Consequences for this project:
-- Block RAM for the core can go up to 75 × 36 Kb (about 330 KiB) instead of 50 (225 KiB) with the openXC7 flow.
+- Block RAM for the core can go up to 75 blocks instead of 50 with the openXC7 flow. Each RAMB36 holds 32 Kb of data plus 4 Kb of parity, so for byte-addressed memory that is 300 KiB instead of 200 KiB.
 - It is outside AMD's specification, and Vivado (the fallback in D8) still limits the part to 35T resources. A design that uses more than 50 BRAMs cannot fall back to Vivado.
 - DSPs and logic beyond the 35T limits were not verified (see below).
 
