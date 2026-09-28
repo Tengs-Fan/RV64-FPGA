@@ -14,3 +14,5 @@ This is a learning project.
 - FPGA: Xilinx Artix-7 XC7A35T (JTAG ID `0x0362D093`).
 - Programmer: Digilent FT232H-based JTAG (`0403:6014`), used with `openFPGALoader -c digilent_hs2`.
 - Console: PL2303 USB-serial cable on FPGA pins.
+
+Details, measurements, and toolchain pitfalls: [docs/BOARD.md](docs/BOARD.md).

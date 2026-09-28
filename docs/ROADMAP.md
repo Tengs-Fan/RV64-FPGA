@@ -89,6 +89,7 @@ Done when: user programs run in their own address spaces on the FPGA.
 
 Newest first. One or two lines per session: what changed, what's next.
 
+- 2026-09-28: added `docs/BOARD.md` with the JTAG measurements of the board, the 50T-BRAM finding, and openXC7 pitfalls. Board name and pinout still unknown.
 - 2026-09-28: switched the FPGA flow to openXC7, Vivado only as a fallback (D8).
 - 2026-09-28: switched software to Zig (D7); added `sw/` with `build.zig`, linker script, and a hello program for QEMU virt; added the test finisher to the memory map (D4).
 - 2026-09-28: project created; decisions D1–D10 and this roadmap written. Next: M0.
