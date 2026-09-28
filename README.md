@@ -11,8 +11,9 @@ This is a learning project.
 
 ## Hardware
 
-- FPGA: Xilinx Artix-7 XC7A35T (JTAG ID `0x0362D093`).
+- Board: 特權同學 STAR Artix-7 learning board.
+- FPGA: Xilinx Artix-7 XC7A35T-FTG256 (JTAG ID `0x0362D093`); build for `xc7a35tftg256-1`.
 - Programmer: Digilent FT232H-based JTAG (`0403:6014`), used with `openFPGALoader -c digilent_hs2`.
-- Console: PL2303 USB-serial cable on FPGA pins.
+- Console: the board's on-board PL2303 USB-serial chip (its own USB Type-B port).
 
 Details, measurements, and toolchain pitfalls: [docs/BOARD.md](docs/BOARD.md).

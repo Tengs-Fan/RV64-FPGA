@@ -73,10 +73,10 @@ Start at 50 MHz; raise it only after timing is met.
 On-chip debugging without Vivado's ILA: read status words over JTAG with `BSCANE2` + openocd (as the probe does), or dump a retired-instruction trace buffer over UART.
 Vivado (free Standard edition, in an Ubuntu 24.04 distrobox) is the fallback, installed only when needed: a bug that passes simulation but fails on hardware and might be the toolchain, a need for the ILA, or a DDR controller via MIG at M7.
 
-## D9. Console: UART on FPGA pins through the PL2303 cable
+## D9. Console: UART through the board's PL2303
 
-Check that the cable's logic level is 3.3 V and matches the I/O bank voltage of the pins used before connecting.
-TX of the cable goes to the FPGA's RX pin and vice versa.
+The PL2303HXD is on the board at 3.3 V, wired to FPGA pins P10 (FPGA RX) and P11 (FPGA TX) in bank 14 (3.3 V), with its own USB Type-B connector; see [BOARD.md](BOARD.md).
+No external cable wiring or level check is needed.
 
 ## D10. Repository layout
 
@@ -93,3 +93,4 @@ TX of the cable goes to the FPGA's RX pin and vice versa.
 - 2026-09-28: initial decisions.
 - 2026-09-28: D8 switched from Vivado to openXC7, with Vivado as the fallback; D1 gained the Yosys subset rule.
 - 2026-09-28: D7 switched from C to Zig at the user's request, after a test build confirmed plain-RV64I output.
+- 2026-09-28: D9 updated: the PL2303 turned out to be on the board (STAR schematic), not a separate cable.

@@ -1,25 +1,77 @@
 # Board
 
-What is known about the FPGA board, measured over JTAG from the Y9000P host (Fedora 44).
-Facts are dated; re-measure before relying on anything marked unknown.
+The board is 特權同學's **STAR** Artix-7 learning board (STAR 學習板, schematics titled `AR7_*.SchDoc`, dated 2020-03-31).
+Facts below come from the vendor's schematic and constraint files and from measurements over JTAG on the Y9000P host (Fedora 44); each says which.
+
+Vendor material (not copied into this repo):
+- `~/Library/CloudStorage/OneDrive-Personal/3-Archive/Archive/FPGA/09_STAR_开发板资料共享/`: schematic, PCB layers, 25 example Vivado projects (`project/at7_ex*.rar`), board test project, datasheets.
+- `~/Documents/Obsidian Vault/Database/Manual/Artix7-STAR/`: the schematic PDF and the constraint files `at7.xdc` (all board I/O), `ddr3.xdc` (MIG output), `lvds.xdc`, `at7_vga.xdc`.
 
 ## Chip
 
 | Item | Value | How known |
 |---|---|---|
-| Part | Xilinx Artix-7 XC7A35T | JTAG IDCODE `0x0362D093` (2026-09-24) |
+| Part | Xilinx Artix-7 XC7A35T, package **FTG256** | Schematic (`XC7A35T-FTG256`); JTAG IDCODE `0x0362D093`; the vendor pin names only span A–T × 1–16 |
+| nextpnr / prjxray part | `xc7a35tftg256-1` | Speed grade -1 is likely (the vendor's MIG file says `-1`) but not confirmed; read the chip marking |
 | Device DNA | `0x00022c002428c854` | `openFPGALoader --read-dna` |
-| Package, speed grade | unknown | Not readable over JTAG; read the chip marking. `xc7a35tcsg324-1` so far is an assumption. |
-| Board name, clock, LEDs, pins | unknown | See "Open questions" in [ROADMAP.md](ROADMAP.md) |
-| Boot mode | Master SPI (M[2:0] = `001`) | STAT register `0x401079fc`: the board configures itself from its SPI flash at power-up |
-| Flash contents | A user design, loaded and running | DONE = 1, no CRC or ID error, MMCM locked (2026-09-24) |
+| Boot mode | Master SPI (M[2:0] = `001`) | STAT register `0x401079fc` |
+| Configuration flash | Spansion S25FL032P, 4 MB, quad mode enabled | Schematic (`S25FL032P0XMFI011`) and JEDEC ID `01 02 15` read over JTAG |
+| DDR3 | Micron MT41K128M16JT, 256 MB, x16, on bank 15 | Schematic; the vendor's `ddr3.xdc` is MIG output for 400 MHz, SSTL15 |
 
 Health reading from the on-chip XADC (2026-09-24): 31 °C, VCCINT 1.033 V (nominal 1.0), VCCAUX 1.828 V (nominal 1.8).
+
+The a7-50t-probe experiment (below) built for `xc7a35tcsg324-1`, the wrong package.
+It still worked because it used no I/O pins and the die is the same; any design with pins must use `xc7a35tftg256-1`.
+
+## I/O banks
+
+From the schematic's power page:
+
+| Bank | VCCO | What is on it | IOSTANDARD |
+|---|---|---|---|
+| 0 | 3.3 V | Configuration | |
+| 14 | 3.3 V | 50 MHz clock, UART, LCD, QSPI flash, keys, 7-segment | `LVCMOS33` |
+| 34 | 3.3 V | LEDs, switches, reset button, buttons | `LVCMOS33` |
+| 15 | 1.5 V | DDR3 | `SSTL15` (MIG) |
+| 35 | `VCC_IO35`: 2.5 V or 3.3 V, set by jumper P2 | PMOD connectors and LVDS pins (`lvds.xdc`) | Check P2 before using this bank |
+
+The vendor files write `LVTTL` for the 3.3 V pins; `LVCMOS33` is the same voltage and is what nextpnr-xilinx supports.
+
+## Pins for M0
+
+From the vendor's `at7.xdc`, cross-checked against the schematic.
+
+| Signal | Pin | Notes |
+|---|---|---|
+| `clk_50m` | N11 | 50 MHz oscillator X1, `IO_L13P_T2_MRCC_14` (clock-capable) |
+| `rst_n` | T2 | Reset button `SYSRST_N`, active low |
+| `led[0..7]` | M1, N1, P1, R2, T3, R5, R6, T7 | Bank 34 |
+| `sw[0..7]` | M2, N2, R1, R3, T4, T5, R7, R8 | DIP switches, bank 34 |
+| `uart_rx` (FPGA input) | P10 | From the PL2303's TXD |
+| `uart_tx` (FPGA output) | P11 | To the PL2303's RXD |
+
+## Console
+
+The USB-serial chip is on the board: a PL2303HXD powered at 3.3 V, with its own USB Type-B connector (P15).
+No level shifting or wiring is needed; plug a second USB cable into that connector.
+On 2026-09-28 only the JTAG adapter was connected to the Y9000P, so the PL2303 did not show up in `lsusb`.
+
+## Flash backup
+
+The factory flash was dumped on 2026-09-28, before anything writes to it:
+
+- File: `~/fpga-backup/factory-flash.bin` on the Y9000P, 4,194,304 bytes (the whole chip).
+- SHA-256: `b71d7a0c0b60b9c39dc8524c1cea05e94d91838da1ee373261e0d0bac752d08a` (two dumps matched).
+- Contents: one uncompressed, unencrypted Vivado bitstream of 2,192,012 bytes at offset 0 (IDCODE `0x0362D093`), the rest erased.
+- Restore: `openFPGALoader -c digilent_hs2 --fpga-part xc7a35tftg256 -f factory-flash.bin`.
+
+Dumping needs `--fpga-part` because openFPGALoader loads a package-specific SPI bridge bitstream; the output file is a positional argument (`-o` means offset):
+`openFPGALoader -c digilent_hs2 --fpga-part xc7a35tftg256 --dump-flash --file-size 4194304 out.bin`, then `--reset`.
 
 ## JTAG programmer
 
 - Digilent FT232H, USB `0403:6014`, product string "Digilent USB Device", serial `210241179917`.
-- It has a single channel, used for JTAG. The `/dev/ttyUSB0` it creates is not a console; the console is the separate PL2303 cable (D9).
+- It has a single channel, used for JTAG. The `/dev/ttyUSB0` it creates is not a console; the console is the on-board PL2303 (see "Console").
 - On the Y9000P, udev rule `99-openfpgaloader.rules` is installed and the user is in `plugdev` and `dialout`, so no root is needed.
 
 ## Tools on the Y9000P
@@ -61,4 +113,4 @@ Seen with the `docker.io/regymm/openxc7` image, nextpnr-xilinx on `xc7a35tcsg324
 - With BRAM or DSP use near 100 %, the default HeAP placer ran for over 30 minutes without finishing; `--placer sa` placed the same design in minutes.
 - The default router2 failed with `ERROR: Invalid global constant node 'INT_L_X0Y46/GND_WIRE'`; `--router router1` routed the same design.
 - Designs with 60 or more DSP48E1s did not build: the SA placer reported `failed to place chain`, and router2 hit the same `GND_WIRE` error. Expect trouble with many DSPs; the M extension's multiplier should need only a few.
-- Generating the chipdb (`bbaexport.py` + `bbasm`) takes about a minute and yields a 93 MB `xc7a35tcsg324-1.bin`; cache it rather than regenerating per build.
+- Generating the chipdb (`bbaexport.py` + `bbasm`) takes about a minute and yields a 93 MB chipdb per part and package (build `xc7a35tftg256-1` for this board); cache it rather than regenerating per build.
