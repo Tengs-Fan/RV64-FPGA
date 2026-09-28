@@ -1,6 +1,6 @@
 # Board
 
-The board is 特權同學's **STAR** Artix-7 learning board (STAR 學習板, schematics titled `AR7_*.SchDoc`, dated 2020-03-31).
+The board is 特權同學's **STAR** Artix-7 learning board ("STAR" silkscreen confirmed from a photo of the board) (STAR 學習板, schematics titled `AR7_*.SchDoc`, dated 2020-03-31).
 Facts below come from the vendor's schematic and constraint files and from measurements over JTAG on the Y9000P host (Fedora 44); each says which.
 
 Vendor material (not copied into this repo):
@@ -69,6 +69,9 @@ Dumping needs `--fpga-part` because openFPGALoader loads a package-specific SPI 
 `openFPGALoader -c digilent_hs2 --fpga-part xc7a35tftg256 --dump-flash --file-size 4194304 out.bin`, then `--reset`.
 
 ## JTAG programmer
+
+The programmer in the board's kit is a 特權-branded "Xilinx Platform Cable USB" box on a 14-pin ribbon (photo, 2026-09-28).
+Genuine Platform Cables enumerate as `03fd:0008`; the adapter seen on the Y9000P enumerates as Digilent FT232H, so either this box is an FT232H-based clone or a different adapter was connected. `-c digilent_hs2` works either way.
 
 - Digilent FT232H, USB `0403:6014`, product string "Digilent USB Device", serial `210241179917`.
 - It has a single channel, used for JTAG. The `/dev/ttyUSB0` it creates is not a console; the console is the on-board PL2303 (see "Console").
