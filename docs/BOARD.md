@@ -60,7 +60,7 @@ On 2026-09-28 only the JTAG adapter was connected to the Y9000P, so the PL2303 d
 
 The factory flash was dumped on 2026-09-28, before anything writes to it:
 
-- File: `~/fpga-backup/factory-flash.bin` on the Y9000P, 4,194,304 bytes (the whole chip).
+- Files: `~/fpga-backup/factory-flash.bin` on the Y9000P and `~/fpga-backup/star-factory-flash.bin` on the Mac, 4,194,304 bytes each (the whole chip).
 - SHA-256: `b71d7a0c0b60b9c39dc8524c1cea05e94d91838da1ee373261e0d0bac752d08a` (two dumps matched).
 - Contents: one uncompressed, unencrypted Vivado bitstream of 2,192,012 bytes at offset 0 (IDCODE `0x0362D093`), the rest erased.
 - Restore: `openFPGALoader -c digilent_hs2 --fpga-part xc7a35tftg256 -f factory-flash.bin`.
