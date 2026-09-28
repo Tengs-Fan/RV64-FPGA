@@ -5,15 +5,15 @@ Don't start a milestone until the previous one's "Done when" is true.
 
 ## Current position
 
-**Milestone:** M0, not started. Software side: `sw/hello` builds with Zig 0.16.0 (`cd sw && zig build`); `zig build run` boots it on QEMU (needs `qemu-system-riscv`).
-**Next action:** blink an LED through the openXC7 flow (D8) for `xc7a35tftg256-1`; pins are in [BOARD.md](BOARD.md) (clock N11, LED0 M1, UART P10/P11); meanwhile, on QEMU, grow `sw/` into a trap handler with timer interrupts (practice for M3).
+**Milestone:** M0, in progress: `make -C fpga` builds `blinky.bit`; next `make -C fpga prog` and watch the LEDs. Software side: `sw/hello` builds with Zig 0.16.0 (`cd sw && zig build`); `zig build run` boots it on QEMU (needs `qemu-system-riscv`).
+**Next action:** `make -C fpga prog` and confirm the LEDs count; then write a hardware-only UART transmitter (pins P10/P11 in [BOARD.md](BOARD.md), commented out in `fpga/star.xdc`); meanwhile, on QEMU, grow `sw/` into a trap handler with timer interrupts (practice for M3).
 **Open questions:** see the bottom of this file.
 
 ## Milestones
 
 ### M0. Board bring-up
 
-- [ ] `make` in `fpga/` builds a bitstream with the openXC7 container (D8).
+- [x] `make` in `fpga/` builds a bitstream with the openXC7 container (D8) (2026-09-28, `rtl/blinky.sv`).
 - [x] Board pinout known: clock pin and frequency, one LED, two pins for UART (2026-09-28, see BOARD.md).
 - [ ] LED blinks.
 - [ ] A hardware-only UART transmitter prints a repeating character in `picocom`.
@@ -88,6 +88,7 @@ Done when: user programs run in their own address spaces on the FPGA.
 
 Newest first. One or two lines per session: what changed, what's next.
 
+- 2026-09-28: added the openXC7 build flow (`fpga/Makefile`, `fpga/star.xdc`) and `rtl/blinky.sv`; the bitstream builds for `xc7a35tftg256-1` (142 MHz possible at a 50 MHz target). The SA placer fails on small designs, so the defaults (HeAP, router2) are used. Next: load it and see the LEDs count, then the UART transmitter.
 - 2026-09-28: identified the board as 特權同學 STAR (XC7A35T-FTG256, 50 MHz clock, on-board PL2303 at 3.3 V, 256 MB DDR3) from the vendor files; recorded pins and bank voltages in BOARD.md; backed up the factory flash. Next: LED blink.
 - 2026-09-28: added `docs/BOARD.md` with the JTAG measurements of the board, the 50T-BRAM finding, and openXC7 pitfalls. Board name and pinout still unknown.
 - 2026-09-28: switched the FPGA flow to openXC7, Vivado only as a fallback (D8).

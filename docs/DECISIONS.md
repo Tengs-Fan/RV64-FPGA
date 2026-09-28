@@ -85,7 +85,7 @@ No external cable wiring or level check is needed.
 | `rtl/` | SystemVerilog for the core and SoC |
 | `sim/` | Verilator testbench, test runners, Spike comparison |
 | `sw/` | Boot ROM, test programs, the OS |
-| `fpga/` | Constraints (XDC), Vivado Tcl, build and program scripts |
+| `fpga/` | Constraints (XDC), the openXC7 Makefile |
 | `docs/` | This file, the roadmap, notes |
 
 ## Changes
