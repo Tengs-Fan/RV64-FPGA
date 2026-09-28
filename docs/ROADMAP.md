@@ -5,8 +5,8 @@ Don't start a milestone until the previous one's "Done when" is true.
 
 ## Current position
 
-**Milestone:** M0, not started.
-**Next action:** install Vivado (see D8 in DECISIONS.md) and identify the board's clock, LED, and UART pins.
+**Milestone:** M0, not started. Software side: `sw/hello` builds with Zig 0.16.0 (`cd sw && zig build`); `zig build run` boots it on QEMU (needs `qemu-system-riscv`).
+**Next action:** start the Vivado download (D8) and identify the board's clock, LED, and UART pins; meanwhile, on QEMU, grow `sw/` into a trap handler with timer interrupts (practice for M3).
 **Open questions:** see the bottom of this file.
 
 ## Milestones
@@ -89,4 +89,5 @@ Done when: user programs run in their own address spaces on the FPGA.
 
 Newest first. One or two lines per session: what changed, what's next.
 
+- 2026-09-28: switched software to Zig (D7); added `sw/` with `build.zig`, linker script, and a hello program for QEMU virt; added the test finisher to the memory map (D4).
 - 2026-09-28: project created; decisions D1–D10 and this roadmap written. Next: M0.

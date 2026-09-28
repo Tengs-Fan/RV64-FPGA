@@ -28,6 +28,7 @@ That lets us swap block RAM for caches and DDR later without rewriting the pipel
 | Address | Device |
 |---|---|
 | `0x0000_1000` | Boot ROM: UART program loader |
+| `0x0010_0000` | Test finisher: write `0x5555` = pass and stop, `(code << 16) \| 0x3333` = fail. QEMU exits; the Verilator testbench ends the simulation. |
 | `0x0200_0000` | CLINT: `mtime`, `mtimecmp`, software interrupt |
 | `0x1000_0000` | UART: minimal 16550-compatible subset |
 | `0x8000_0000` | RAM (block RAM now, DDR later) |
