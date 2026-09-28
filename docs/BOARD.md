@@ -11,7 +11,7 @@ Vendor material (not copied into this repo):
 
 | Item | Value | How known |
 |---|---|---|
-| Part | Xilinx Artix-7 XC7A35T, package **FTG256** | Schematic (`XC7A35T-FTG256`); JTAG IDCODE `0x0362D093`; the vendor pin names only span A–T × 1–16 |
+| Part | Xilinx Artix-7 XC7A35T, package **FTG256** | Schematic (`XC7A35T-FTG256`); the vendor's board-test bitstream header (`7a35tftg256`); JTAG IDCODE `0x0362D093` |
 | nextpnr / prjxray part | `xc7a35tftg256-1` | Speed grade -1 is likely (the vendor's MIG file says `-1`) but not confirmed; read the chip marking |
 | Device DNA | `0x00022c002428c854` | `openFPGALoader --read-dna` |
 | Boot mode | Master SPI (M[2:0] = `001`) | STAT register `0x401079fc` |
@@ -63,6 +63,7 @@ The factory flash was dumped on 2026-09-28, before anything writes to it:
 - Files: `~/fpga-backup/factory-flash.bin` on the Y9000P and `~/fpga-backup/star-factory-flash.bin` on the Mac, 4,194,304 bytes each (the whole chip).
 - SHA-256: `b71d7a0c0b60b9c39dc8524c1cea05e94d91838da1ee373261e0d0bac752d08a` (two dumps matched).
 - Contents: one uncompressed, unencrypted Vivado bitstream of 2,192,012 bytes at offset 0 (IDCODE `0x0362D093`), the rest erased.
+- It is not the vendor's board-test design (`project/star_board_test.zip`, `at7.runs/impl_2/at7.bit`): same length, but about 11.5% of the bytes differ. Which design it is remains unknown.
 - Restore: `openFPGALoader -c digilent_hs2 --fpga-part xc7a35tftg256 -f factory-flash.bin`.
 
 Dumping needs `--fpga-part` because openFPGALoader loads a package-specific SPI bridge bitstream; the output file is a positional argument (`-o` means offset):
