@@ -70,6 +70,14 @@ Done when: the shell runs on both.
 
 Done when: user programs run in their own address spaces on the FPGA.
 
+### M6.5. Optional: dual core (D11)
+
+- [ ] Two harts sharing block RAM through an arbiter; no caches yet, so memory is coherent by construction.
+- [ ] Inter-processor interrupts through the CLINT's `msip`.
+- [ ] The OS schedules on both harts; locks and TLB shootdown work.
+
+Decide at M7 whether to keep two cores (and build cache coherence) or go back to one.
+
 ### M7. Caches and DDR (the STAR board has 256 MB of DDR3, MT41K128M16JT on bank 15)
 
 - [ ] Instruction and data caches behind the D3 memory interface.
@@ -88,6 +96,7 @@ Done when: user programs run in their own address spaces on the FPGA.
 
 Newest first. One or two lines per session: what changed, what's next.
 
+- 2026-09-29: decided on one core kept ready for a second (D11); added optional M6.5 dual core.
 - 2026-09-28: added the openXC7 build flow (`fpga/Makefile`, `fpga/star.xdc`) and `rtl/blinky.sv`; the bitstream builds for `xc7a35tftg256-1` (142 MHz possible at a 50 MHz target). The SA placer fails on small designs, so the defaults (HeAP, router2) are used. Next: load it and see the LEDs count, then the UART transmitter.
 - 2026-09-28: identified the board as 特權同學 STAR (XC7A35T-FTG256, 50 MHz clock, on-board PL2303 at 3.3 V, 256 MB DDR3) from the vendor files; recorded pins and bank voltages in BOARD.md; backed up the factory flash. Next: LED blink.
 - 2026-09-28: added `docs/BOARD.md` with the JTAG measurements of the board, the 50T-BRAM finding, and openXC7 pitfalls. Board name and pinout still unknown.

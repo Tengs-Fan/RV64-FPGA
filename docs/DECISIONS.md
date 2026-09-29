@@ -88,9 +88,17 @@ No external cable wiring or level check is needed.
 | `fpga/` | Constraints (XDC), the openXC7 Makefile |
 | `docs/` | This file, the roadmap, notes |
 
+## D11. One core, designed so a second stays possible
+
+A single core: the chip has 20.8K LUTs, one core with an MMU is roughly 5–10K, and the DDR controller and caches at M7 take another 5–10K.
+Multi-core is cheap only before caches: shared block RAM is coherent by construction, but private data caches need a coherence protocol, a project as big as the CPU.
+Cheap now, to keep a second core possible: `mhartid` is a module parameter, the CLINT uses the standard per-hart layout (`msip` at `0x0200_0000 + 4×hart`, `mtimecmp` at `0x0200_4000 + 8×hart`), the OS uses locks from day one, and the A extension's LR/SC reservations can be broken by other harts' stores.
+The window for an optional dual-core experiment is after M6 and before M7 (see ROADMAP.md, M6.5).
+
 ## Changes
 
 - 2026-09-28: initial decisions.
 - 2026-09-28: D8 switched from Vivado to openXC7, with Vivado as the fallback; D1 gained the Yosys subset rule.
 - 2026-09-28: D7 switched from C to Zig at the user's request, after a test build confirmed plain-RV64I output.
 - 2026-09-28: D9 updated: the PL2303 turned out to be on the board (STAR schematic), not a separate cable.
+- 2026-09-29: D11 added: one core, kept ready for a second.
